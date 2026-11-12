@@ -73,6 +73,12 @@ public:
 protected:
 	void bind() override {
 		if (this->object != nullptr) return;
+
+		// The registry proxy is destroyed before its objects during a reset, and destroying
+		// those objects can run user code that refs a remaining object. It will be destroyed
+		// before the registry is recreated, so there is nothing to bind it to.
+		if (this->registry->object == nullptr) return;
+
 		this->registryBind(INTERFACE, VERSION);
 		this->PwBindableObject::bind();
 	}
