@@ -155,6 +155,13 @@ void PwCore::onError(void* data, quint32 id, qint32 /*seq*/, qint32 res, const c
 		return;
 	}
 
+	// Errors on objects other than the core are scoped to that object, e.g. a bluetooth node
+	// failing when its transport drops. Only core errors indicate a broken connection.
+	if (id != PW_ID_CORE) {
+		qCWarning(logLoop) << "Pipewire error on object" << id << "with code" << res << message;
+		return;
+	}
+
 	qCWarning(logLoop) << "Pipewire error on object" << id << "with code" << res << message;
 
 	emit self->fatalError();
